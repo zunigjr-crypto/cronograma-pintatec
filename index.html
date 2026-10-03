@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cronograma de Producción · Pintatec</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap">
 <style>
   :root{
     --azul:#10285a;
@@ -18,6 +19,7 @@
     --input-border:#aab6d9;
     --text:#1b2433;
     --muted:#64708a;
+    --font-mono:'Share Tech Mono','Courier New',monospace;
     --shadow: 0 1px 2px rgba(16,40,90,.06), 0 8px 24px rgba(16,40,90,.06);
     color-scheme: light;
   }
@@ -164,8 +166,18 @@
   .btn-ghost{background:transparent; color:var(--muted); border:1px solid var(--border);}
   .btn-ghost:hover{color:var(--text); border-color:var(--muted);}
 
+  .btn-mini{
+    border:0; border-radius:7px; padding:6px 11px; font-size:11.5px; font-weight:700;
+    cursor:pointer; font-family:inherit; white-space:nowrap;
+  }
+  .btn-start{background:rgba(28,63,130,.12); color:var(--azul2);}
+  .btn-start:hover{background:rgba(28,63,130,.2);}
+  .btn-finish{background:rgba(31,157,85,.14); color:var(--verde);}
+  .btn-finish:hover{background:rgba(31,157,85,.24);}
+  .row-actions{display:flex; gap:6px; flex-wrap:wrap;}
+
   .tbl-scroll{overflow-x:auto;}
-  table.data{width:100%; border-collapse:collapse; font-size:12.5px; min-width:760px;}
+  table.data{width:100%; border-collapse:collapse; font-size:12.5px; min-width:900px;}
   table.data th{
     text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.03em;
     color:var(--muted); padding:10px 14px; border-bottom:1px solid var(--border); white-space:nowrap;
@@ -184,6 +196,20 @@
   .badge-stop{background:rgba(242,118,15,.14); color:#b35a0c;}
   .badge-nuevo{background:rgba(28,63,130,.12); color:var(--azul2);}
   .badge-stop{color:#c7680f;}
+
+  /* ---- countdown chip (used in tables) ---- */
+  .cd{
+    font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-weight:700;
+    padding:3px 9px; border-radius:6px; font-size:12.5px; display:inline-block;
+  }
+  .cd-ok{background:rgba(31,157,85,.14); color:var(--verde);}
+  .cd-alerta{background:rgba(242,118,15,.18); color:#b35a0c;}
+  .cd-vencido{background:rgba(215,38,61,.18); color:var(--rojo);}
+  @media (prefers-reduced-motion: no-preference){
+    .cd-alerta{animation:cdpulse 1s infinite;}
+    .cd-vencido{animation:cdpulse .6s infinite;}
+  }
+  @keyframes cdpulse{0%,100%{opacity:1;} 50%{opacity:.4;}}
 
   .del{
     border:0; background:transparent; color:var(--muted); cursor:pointer; font-size:15px;
@@ -212,7 +238,7 @@
     form.entry input, form.entry select{padding:12px 11px; font-size:16px;}
     .btn{padding:13px 16px; font-size:14.5px;}
     .card-head{flex-direction:column; align-items:flex-start;}
-    table.data{min-width:620px;}
+    table.data{min-width:760px;}
 
     .bottom-nav{
       display:flex; position:fixed; left:0; right:0; bottom:0; z-index:20;
@@ -230,7 +256,7 @@
     .bottom-nav button.active{color:var(--azul2); background:var(--surface-2);}
   }
 
-  /* ================= TV / warehouse board ================= */
+  /* ================= TV / warehouse airport-style board ================= */
   #tv{
     --tvbg:#0a1733;
     --tvbg2:#0f2050;
@@ -242,7 +268,7 @@
     border-radius:16px;
     min-height:640px;
     padding:20px 22px 26px;
-    display:flex; flex-direction:column; gap:16px;
+    display:flex; flex-direction:column; gap:14px;
     box-shadow:0 20px 60px rgba(5,10,30,.45);
   }
   .tv-head{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;}
@@ -254,18 +280,33 @@
   }
   .tv-brand b{font-size:19px; letter-spacing:.02em;}
   .tv-brand span{font-size:12px; color:var(--tvmuted); display:block;}
+  .tv-mid{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
   .tv-live{
     display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700;
     color:#ffb15c; letter-spacing:.08em; text-transform:uppercase;
   }
-  .tv-live .ping{width:8px; height:8px; border-radius:50%; background:#ff5a5a; box-shadow:0 0 0 0 rgba(255,90,90,.6); animation:ping 1.6s infinite;}
+  .tv-live .ping{width:8px; height:8px; border-radius:50%; background:#ff5a5a; box-shadow:0 0 0 0 rgba(255,90,90,.6);}
+  @media (prefers-reduced-motion: no-preference){ .tv-live .ping{animation:ping 1.6s infinite;} }
   @keyframes ping{
     0%{box-shadow:0 0 0 0 rgba(255,90,90,.55);}
     70%{box-shadow:0 0 0 9px rgba(255,90,90,0);}
     100%{box-shadow:0 0 0 0 rgba(255,90,90,0);}
   }
-  .tv-clock{font-size:22px; font-weight:700; font-variant-numeric:tabular-nums;}
+  .tv-sound-btn{
+    border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.08); color:var(--tvtext);
+    font-weight:700; font-size:12px; padding:7px 13px; border-radius:999px; cursor:pointer; font-family:inherit;
+  }
+  .tv-sound-btn.on{background:rgba(126,230,166,.18); border-color:rgba(126,230,166,.4); color:#7ee6a6;}
+  .tv-clock{font-family:var(--font-mono); font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:.02em;}
   .tv-date{font-size:12px; color:var(--tvmuted); text-transform:capitalize;}
+
+  .tv-ticker{
+    background:rgba(215,38,61,.16); border:1px solid rgba(215,38,61,.45); color:#ff9aa3;
+    font-weight:700; font-size:13px; letter-spacing:.03em; padding:9px 14px; border-radius:10px;
+    text-align:center; text-transform:uppercase;
+  }
+  @media (prefers-reduced-motion: no-preference){ .tv-ticker{animation:tickerBlink 1.4s infinite;} }
+  @keyframes tickerBlink{0%,100%{opacity:1;} 50%{opacity:.55;}}
 
   .tv-board{
     display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; flex:1;
@@ -289,9 +330,19 @@
     background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
     border-radius:10px; padding:10px 11px; display:flex; flex-direction:column; gap:4px;
   }
+  .tv-card-alerta{border-color:#ffb15c;}
+  .tv-card-vencido{border-color:#ff8a94; box-shadow:0 0 0 2px rgba(255,90,90,.2);}
   .tv-card .p{font-size:15px; font-weight:700; text-wrap:balance;}
   .tv-card .meta{display:flex; flex-wrap:wrap; font-size:11.5px; color:var(--tvmuted); gap:3px 10px;}
   .tv-card .meta b{color:var(--tvtext); font-weight:600;}
+  .tv-cd{
+    font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-weight:700;
+    font-size:19px; margin-top:2px; display:inline-block; padding:2px 10px; border-radius:6px; width:fit-content;
+  }
+  .tv-cd.cd-ok{color:#7ee6a6; background:rgba(126,230,166,.12);}
+  .tv-cd.cd-alerta{color:#ffb15c; background:rgba(255,177,92,.16);}
+  .tv-cd.cd-vencido{color:#ff8a94; background:rgba(255,138,148,.18);}
+  .tv-cd-pending{font-size:11.5px; color:var(--tvmuted);}
   .tv-empty-lane{color:var(--tvmuted); font-size:12px; text-align:center; padding:18px 8px;}
 
   .tv-pack{
@@ -315,7 +366,7 @@
     .lane-body{max-height:none;}
     .tv-pack-row{grid-template-columns:1.2fr 1fr .6fr .6fr .6fr .6fr; font-size:11.5px;}
     .tv-pack-row span:nth-child(3){display:none;}
-    .tv-clock{font-size:19px;}
+    .tv-clock{font-size:20px;}
   }
 </style>
 </head>
@@ -361,7 +412,8 @@
           <thead>
             <tr>
               <th>Producto a realizar</th><th>Fecha</th><th>Operario</th>
-              <th>Cantidad</th><th>Maquinaria</th><th>Estado</th><th></th>
+              <th>Cantidad</th><th>Maquinaria</th><th>Estado</th>
+              <th>Tiempo restante</th><th>Acciones</th><th></th>
             </tr>
           </thead>
           <tbody id="prodBody"></tbody>
@@ -418,6 +470,10 @@
             <label for="pMaquina">Maquinaria</label>
             <input id="pMaquina" list="dlMaquinas" required placeholder="Ej. Mezcladora 1">
           </div>
+          <div class="field">
+            <label for="pDuracion">Duración estimada (h)</label>
+            <input id="pDuracion" type="number" min="0" step="0.25" value="3" required>
+          </div>
           <div class="field span2">
             <label for="pEstado">Estado</label>
             <select id="pEstado" required>
@@ -447,12 +503,12 @@
       </div>
 
       <div class="tbl-scroll">
-        <table class="data">
+        <table class="data" style="min-width:1040px;">
           <thead>
             <tr>
               <th>Producto final</th><th>Fecha</th><th>Operario</th>
               <th class="num">1/4</th><th class="num">Galón</th><th class="num">Balde</th><th class="num">Cuñete</th>
-              <th>Nota</th><th></th>
+              <th>Nota</th><th>Duración</th><th>Acciones</th><th></th>
             </tr>
           </thead>
           <tbody id="packBody"></tbody>
@@ -517,6 +573,10 @@
             <label for="kCunete">Cuñete</label>
             <input id="kCunete" type="number" min="0" step="1" value="0">
           </div>
+          <div class="field">
+            <label for="kDuracion">Duración estimada (h)</label>
+            <input id="kDuracion" type="number" min="0" step="0.25" placeholder="Pendiente">
+          </div>
           <div class="field span2">
             <label for="kNota">Nota</label>
             <input id="kNota" placeholder="Opcional">
@@ -528,10 +588,32 @@
       </div>
     </div>
 
+    <section class="card" style="margin-top:18px;">
+      <div class="card-head">
+        <div>
+          <h2>Operaciones finalizadas</h2>
+          <p>Registro de producción y empaque ya terminados, con el tiempo real contra el estimado.</p>
+        </div>
+        <span class="pill-count" id="histCount">0 registros</span>
+      </div>
+      <div class="tbl-scroll">
+        <table class="data" style="min-width:760px;">
+          <thead>
+            <tr>
+              <th>Tipo</th><th>Producto</th><th>Operario</th><th>Inicio</th><th>Fin</th>
+              <th class="num">Duración real</th><th class="num">Estimada</th><th>Resultado</th>
+            </tr>
+          </thead>
+          <tbody id="histBody"></tbody>
+        </table>
+        <div class="empty" id="histEmpty">Aún no hay operaciones finalizadas.</div>
+      </div>
+    </section>
+
     <footer class="hint">Vista para quien organiza el trabajo del día. Cambia a "Pantalla bodega" para ver el tablero del televisor.</footer>
   </div>
 
-  <!-- ===================== VISTA TV ===================== -->
+  <!-- ===================== VISTA TV (tipo tablero de aeropuerto) ===================== -->
   <div id="tv" hidden>
     <div class="tv-head">
       <div class="tv-brand">
@@ -541,12 +623,17 @@
           <span>Cronograma del día</span>
         </div>
       </div>
-      <div class="tv-live"><span class="ping"></span> En vivo</div>
+      <div class="tv-mid">
+        <div class="tv-live"><span class="ping"></span> En vivo</div>
+        <button class="tv-sound-btn" id="tvSoundBtn" type="button" onclick="toggleAudio()">🔇 Activar sonido</button>
+      </div>
       <div style="text-align:right;">
         <div class="tv-clock" id="tvClock">--:--</div>
         <div class="tv-date" id="tvDate">—</div>
       </div>
     </div>
+
+    <div class="tv-ticker" id="tvTicker" hidden>⚠ Por vencer</div>
 
     <div class="tv-board">
       <div class="lane" data-k="urgente">
@@ -605,6 +692,8 @@
     nuevo:{label:"Nuevo", badge:"badge-nuevo", dot:"dot-nuevo"}
   };
 
+  var ALERTA_MIN = 5; // minutos antes de vencer para pasar a "alerta" y sonar la alarma
+
   function todayISO(){
     var d = new Date();
     return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
@@ -612,17 +701,48 @@
   var TODAY = todayISO();
 
   function seedProd(){
+    var now = Date.now();
+    function m(min){ return now - min*60000; }
     return [
-      {id:1, producto:"Vinilo Tipo 1 Blanco", fecha:TODAY, operario:"Jhon Pérez", cantidad:200, maquina:"Mezcladora 1", estado:"urgente"},
-      {id:2, producto:"Estuco Interior", fecha:TODAY, operario:"Marta Gómez", cantidad:80, maquina:"Mezcladora 2", estado:"proceso"},
-      {id:3, producto:"Base Clara T2", fecha:TODAY, operario:"Carlos Ruiz", cantidad:200, maquina:"Mezcladora 1", estado:"stop"},
-      {id:4, producto:"Esmalte Sintético Negro", fecha:TODAY, operario:"Jhon Pérez", cantidad:100, maquina:"Molino", estado:"nuevo"}
+      // -- Urgente (sin iniciar) --
+      {id:1, producto:"Vinilo Tipo 1 Blanco", fecha:TODAY, operario:"Jhon Pérez", cantidad:200, maquina:"Mezcladora 1", estado:"urgente", duracionMin:180, creado:now, inicio:null},
+      {id:2, producto:"Base Clara T1", fecha:TODAY, operario:"Carlos Ruiz", cantidad:180, maquina:"Mezcladora 1", estado:"urgente", duracionMin:150, creado:now, inicio:null},
+      {id:3, producto:"Anticorrosivo Rojo Óxido", fecha:TODAY, operario:"Pedro Martínez", cantidad:90, maquina:"Dispersor", estado:"urgente", duracionMin:120, creado:now, inicio:null},
+      {id:4, producto:"Esmalte Sintético Blanco", fecha:TODAY, operario:"Sofía Ramírez", cantidad:110, maquina:"Molino", estado:"urgente", duracionMin:150, creado:now, inicio:null},
+      {id:5, producto:"Vinilo Tipo 2 Blanco", fecha:TODAY, operario:"Andrés Soto", cantidad:160, maquina:"Mezcladora 2", estado:"urgente", duracionMin:180, creado:now, inicio:null},
+      // -- En proceso (con cronómetro corriendo, en distintos puntos) --
+      {id:6, producto:"Esmalte Sintético Negro", fecha:TODAY, operario:"Marta Gómez", cantidad:100, maquina:"Molino", estado:"proceso", duracionMin:180, creado:m(192), inicio:m(192)}, // vencido hace 12 min
+      {id:7, producto:"Estuco Exterior", fecha:TODAY, operario:"Luisa Cárdenas", cantidad:70, maquina:"Mezcladora 2", estado:"proceso", duracionMin:180, creado:m(177), inicio:m(177)}, // alerta ~3 min
+      {id:8, producto:"Base Clara T3", fecha:TODAY, operario:"Jhon Pérez", cantidad:200, maquina:"Mezcladora 1", estado:"proceso", duracionMin:180, creado:m(175), inicio:m(175)}, // alerta ~5 min
+      {id:9, producto:"Vinilo Tipo 1 Blanco", fecha:TODAY, operario:"Carlos Ruiz", cantidad:150, maquina:"Mezcladora 1", estado:"proceso", duracionMin:180, creado:m(172), inicio:m(172)}, // ~8 min, a punto de alertar
+      {id:10, producto:"Estuco Interior", fecha:TODAY, operario:"Marta Gómez", cantidad:80, maquina:"Mezcladora 2", estado:"proceso", duracionMin:180, creado:m(135), inicio:m(135)}, // ~45 min
+      {id:11, producto:"Base Clara T2", fecha:TODAY, operario:"Andrés Soto", cantidad:200, maquina:"Mezcladora 1", estado:"proceso", duracionMin:180, creado:m(85), inicio:m(85)}, // ~95 min
+      {id:12, producto:"Esmalte Sintético Blanco", fecha:TODAY, operario:"Sofía Ramírez", cantidad:120, maquina:"Molino", estado:"proceso", duracionMin:180, creado:m(2), inicio:m(2)}, // recién iniciada
+      // -- Stop --
+      {id:13, producto:"Anticorrosivo Rojo Óxido", fecha:TODAY, operario:"Pedro Martínez", cantidad:100, maquina:"Dispersor", estado:"stop", duracionMin:120, creado:now, inicio:null},
+      {id:14, producto:"Vinilo Tipo 2 Blanco", fecha:TODAY, operario:"Carlos Ruiz", cantidad:140, maquina:"Mezcladora 2", estado:"stop", duracionMin:180, creado:now, inicio:null},
+      {id:15, producto:"Base Clara T1", fecha:TODAY, operario:"Jhon Pérez", cantidad:160, maquina:"Mezcladora 1", estado:"stop", duracionMin:150, creado:now, inicio:null},
+      {id:16, producto:"Esmalte Sintético Negro", fecha:TODAY, operario:"Marta Gómez", cantidad:90, maquina:"Molino", estado:"stop", duracionMin:180, creado:now, inicio:null},
+      // -- Nuevo --
+      {id:17, producto:"Estuco Exterior", fecha:TODAY, operario:"Luisa Cárdenas", cantidad:100, maquina:"Mezcladora 2", estado:"nuevo", duracionMin:180, creado:now, inicio:null},
+      {id:18, producto:"Vinilo Tipo 1 Blanco", fecha:TODAY, operario:"Andrés Soto", cantidad:200, maquina:"Mezcladora 1", estado:"nuevo", duracionMin:180, creado:now, inicio:null},
+      {id:19, producto:"Base Clara T3", fecha:TODAY, operario:"Sofía Ramírez", cantidad:180, maquina:"Mezcladora 1", estado:"nuevo", duracionMin:180, creado:now, inicio:null},
+      {id:20, producto:"Esmalte Sintético Blanco", fecha:TODAY, operario:"Pedro Martínez", cantidad:90, maquina:"Molino", estado:"nuevo", duracionMin:150, creado:now, inicio:null}
     ];
   }
   function seedPack(){
+    var now = Date.now();
     return [
-      {id:1, producto:"Vinilo Tipo 1 Blanco", fecha:TODAY, operario:"Luisa Cárdenas", cuarto:40, galon:120, balde:10, cunete:2, nota:"Prioridad ruta norte"},
-      {id:2, producto:"Estuco Interior", fecha:TODAY, operario:"Andrés Soto", cuarto:0, galon:60, balde:5, cunete:0, nota:""}
+      {id:1, producto:"Vinilo Tipo 1 Blanco", fecha:TODAY, operario:"Luisa Cárdenas", cuarto:40, galon:120, balde:10, cunete:2, nota:"Prioridad ruta norte", duracionMin:null, creado:now},
+      {id:2, producto:"Estuco Interior", fecha:TODAY, operario:"Andrés Soto", cuarto:0, galon:60, balde:5, cunete:0, nota:"", duracionMin:null, creado:now},
+      {id:3, producto:"Base Clara T2", fecha:TODAY, operario:"Carlos Ruiz", cuarto:20, galon:80, balde:8, cunete:1, nota:"Cliente mayorista", duracionMin:90, creado:now},
+      {id:4, producto:"Esmalte Sintético Negro", fecha:TODAY, operario:"Jhon Pérez", cuarto:10, galon:50, balde:4, cunete:0, nota:"", duracionMin:60, creado:now},
+      {id:5, producto:"Vinilo Tipo 2 Blanco", fecha:TODAY, operario:"Marta Gómez", cuarto:30, galon:100, balde:6, cunete:1, nota:"Ruta sur", duracionMin:null, creado:now},
+      {id:6, producto:"Estuco Exterior", fecha:TODAY, operario:"Sofía Ramírez", cuarto:0, galon:40, balde:3, cunete:0, nota:"", duracionMin:75, creado:now},
+      {id:7, producto:"Base Clara T1", fecha:TODAY, operario:"Pedro Martínez", cuarto:15, galon:70, balde:5, cunete:0, nota:"", duracionMin:null, creado:now},
+      {id:8, producto:"Anticorrosivo Rojo Óxido", fecha:TODAY, operario:"Luisa Cárdenas", cuarto:5, galon:30, balde:2, cunete:0, nota:"Urgente obra civil", duracionMin:45, creado:now},
+      {id:9, producto:"Esmalte Sintético Blanco", fecha:TODAY, operario:"Andrés Soto", cuarto:8, galon:55, balde:4, cunete:1, nota:"", duracionMin:null, creado:now},
+      {id:10, producto:"Base Clara T3", fecha:TODAY, operario:"Carlos Ruiz", cuarto:25, galon:90, balde:7, cunete:2, nota:"Pendiente etiqueta nueva", duracionMin:null, creado:now}
     ];
   }
 
@@ -638,10 +758,12 @@
     try{ localStorage.setItem(key, JSON.stringify(data)); }catch(e){}
   }
 
-  var prodItems = load("cronograma_prod_v1", seedProd);
-  var packItems = load("cronograma_pack_v1", seedPack);
+  var prodItems = load("cronograma_prod_v3", seedProd);
+  var packItems = load("cronograma_pack_v3", seedPack);
+  var historial = load("cronograma_historial_v1", function(){ return []; });
   var nextProdId = prodItems.reduce(function(m,i){return Math.max(m,i.id);},0)+1;
   var nextPackId = packItems.reduce(function(m,i){return Math.max(m,i.id);},0)+1;
+  var nextHistId = historial.reduce(function(m,i){return Math.max(m,i.id);},0)+1;
 
   function fmtFecha(iso){
     if(!iso) return "—";
@@ -649,11 +771,37 @@
     if(p.length!==3) return iso;
     return p[2]+"/"+p[1];
   }
+  function fmtHora(ts){
+    if(ts==null) return null;
+    var d = new Date(ts);
+    return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+  }
+  function fmtMMSS(ms){
+    var totalSec = Math.floor(Math.abs(ms)/1000);
+    var hh = Math.floor(totalSec/3600);
+    var mm = Math.floor((totalSec%3600)/60);
+    var ss = totalSec%60;
+    return String(hh).padStart(2,"0")+":"+String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0");
+  }
+  function fmtDurMin(min){
+    if(min==null) return "—";
+    var h = Math.floor(min/60), m = min%60;
+    return (h ? h+"h " : "")+m+"m";
+  }
   function esc(s){
     return String(s==null?"":s).replace(/[&<>"]/g, function(c){
       return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];
     });
   }
+
+  function tiempoEstado(it){
+    if(it.inicio==null || it.duracionMin==null) return null;
+    var restanteMs = it.inicio + it.duracionMin*60000 - Date.now();
+    var state = restanteMs<=0 ? "vencido" : (restanteMs<=ALERTA_MIN*60000 ? "alerta" : "ok");
+    return {restanteMs:restanteMs, state:state};
+  }
+
+  /* ---------------- render: tablas de oficina ---------------- */
 
   function renderProd(){
     var body = document.getElementById("prodBody");
@@ -663,6 +811,16 @@
     empty.hidden = true;
     body.innerHTML = prodItems.map(function(it){
       var e = ESTADOS[it.estado] || ESTADOS.nuevo;
+      var tiempoHtml;
+      if(it.inicio==null){
+        tiempoHtml = '<span class="muted-cell">Sin iniciar</span>';
+      } else {
+        var t = tiempoEstado(it);
+        tiempoHtml = '<span class="cd cd-'+t.state+'" id="cdt-prod-'+it.id+'">'+(t.restanteMs<=0?'-':'')+fmtMMSS(t.restanteMs)+'</span>';
+      }
+      var accion = it.inicio==null
+        ? '<button class="btn-mini btn-start" onclick="iniciarProd('+it.id+')">▶ Iniciar</button>'
+        : '<button class="btn-mini btn-finish" onclick="finalizarProd('+it.id+')">✓ Finalizar</button>';
       return '<tr>'+
         '<td>'+esc(it.producto)+'</td>'+
         '<td class="muted-cell">'+fmtFecha(it.fecha)+'</td>'+
@@ -670,6 +828,8 @@
         '<td class="num">'+esc(it.cantidad)+' gal</td>'+
         '<td class="muted-cell">'+esc(it.maquina)+'</td>'+
         '<td><span class="badge '+e.badge+'"><span class="dot '+e.dot+'"></span>'+e.label+'</span></td>'+
+        '<td>'+tiempoHtml+'</td>'+
+        '<td class="row-actions">'+accion+'</td>'+
         '<td><button class="del" title="Eliminar" onclick="window.__delProd('+it.id+')">✕</button></td>'+
       '</tr>';
     }).join("");
@@ -691,10 +851,40 @@
         '<td class="num">'+(it.balde||0)+'</td>'+
         '<td class="num">'+(it.cunete||0)+'</td>'+
         '<td class="muted-cell">'+esc(it.nota||"—")+'</td>'+
+        '<td class="muted-cell">'+(it.duracionMin!=null ? fmtDurMin(it.duracionMin) : "Por definir")+'</td>'+
+        '<td class="row-actions"><button class="btn-mini btn-finish" onclick="finalizarPack('+it.id+')">✓ Finalizar</button></td>'+
         '<td><button class="del" title="Eliminar" onclick="window.__delPack('+it.id+')">✕</button></td>'+
       '</tr>';
     }).join("");
   }
+
+  function renderHist(){
+    var body = document.getElementById("histBody");
+    var empty = document.getElementById("histEmpty");
+    document.getElementById("histCount").textContent = historial.length + (historial.length===1 ? " registro" : " registros");
+    if(!historial.length){ body.innerHTML=""; empty.hidden=false; return; }
+    empty.hidden = true;
+    body.innerHTML = historial.map(function(h){
+      var resultado = '<span class="muted-cell">—</span>';
+      if(h.duracionEstMin!=null && h.duracionRealMin!=null){
+        resultado = h.duracionRealMin<=h.duracionEstMin
+          ? '<span class="badge badge-proceso">A tiempo</span>'
+          : '<span class="badge badge-urgente">Con retraso</span>';
+      }
+      return '<tr>'+
+        '<td>'+esc(h.tipo)+'</td>'+
+        '<td>'+esc(h.producto)+'</td>'+
+        '<td>'+esc(h.operario)+'</td>'+
+        '<td class="muted-cell">'+(h.inicioTxt||"—")+'</td>'+
+        '<td class="muted-cell">'+h.finTxt+'</td>'+
+        '<td class="num">'+fmtDurMin(h.duracionRealMin)+'</td>'+
+        '<td class="num muted-cell">'+fmtDurMin(h.duracionEstMin)+'</td>'+
+        '<td>'+resultado+'</td>'+
+      '</tr>';
+    }).join("");
+  }
+
+  /* ---------------- render: tablero TV ---------------- */
 
   function renderTV(){
     var lanes = {urgente:[], proceso:[], stop:[], nuevo:[]};
@@ -710,9 +900,20 @@
       }
       elBody.innerHTML = lanes[k].map(function(it){
         var dateTag = it.fecha === TODAY ? "" : ' <b style="color:#ffb15c;">· '+fmtFecha(it.fecha)+'</b>';
-        return '<div class="tv-card">'+
+        var cdHtml;
+        var cardCls = "tv-card";
+        if(it.inicio==null){
+          cdHtml = '<div class="tv-cd-pending">Sin iniciar</div>';
+        } else {
+          var t = tiempoEstado(it);
+          cdHtml = '<div class="tv-cd cd-'+t.state+'" id="cdv-'+it.id+'">'+(t.restanteMs<=0?'-':'')+fmtMMSS(t.restanteMs)+'</div>';
+          if(t.state==="alerta") cardCls += " tv-card-alerta";
+          if(t.state==="vencido") cardCls += " tv-card-vencido";
+        }
+        return '<div class="'+cardCls+'" id="cdcard-'+it.id+'">'+
           '<div class="p">'+esc(it.producto)+'</div>'+
           '<div class="meta"><span><b>'+esc(it.cantidad)+' gal</b></span><span>'+esc(it.maquina)+'</span><span>'+esc(it.operario)+'</span>'+dateTag+'</div>'+
+          cdHtml+
         '</div>';
       }).join("");
     });
@@ -735,52 +936,114 @@
     }
   }
 
-  function renderAll(){ renderProd(); renderPack(); renderTV(); }
+  function renderAll(){
+    renderProd();
+    renderPack();
+    renderHist();
+    renderTV();
+    updateCountdowns();
+    updateTicker();
+    manageSiren();
+  }
+
+  /* ---------------- acciones: iniciar / finalizar / eliminar ---------------- */
 
   window.__delProd = function(id){
     prodItems = prodItems.filter(function(i){ return i.id !== id; });
-    save("cronograma_prod_v1", prodItems);
+    save("cronograma_prod_v3", prodItems);
     renderAll();
   };
   window.__delPack = function(id){
     packItems = packItems.filter(function(i){ return i.id !== id; });
-    save("cronograma_pack_v1", packItems);
+    save("cronograma_pack_v3", packItems);
     renderAll();
   };
+
+  window.iniciarProd = function(id){
+    var it = prodItems.find(function(i){ return i.id === id; });
+    if(!it) return;
+    it.estado = "proceso";
+    it.inicio = Date.now();
+    save("cronograma_prod_v3", prodItems);
+    renderAll();
+  };
+
+  window.finalizarProd = function(id){
+    var idx = prodItems.findIndex(function(i){ return i.id === id; });
+    if(idx<0) return;
+    var it = prodItems[idx];
+    var fin = Date.now();
+    historial.unshift({
+      id: nextHistId++, tipo:"Producción", producto:it.producto, operario:it.operario,
+      inicioTxt: fmtHora(it.inicio), finTxt: fmtHora(fin),
+      duracionRealMin: it.inicio!=null ? Math.round((fin-it.inicio)/60000) : null,
+      duracionEstMin: it.duracionMin
+    });
+    save("cronograma_historial_v1", historial);
+    prodItems.splice(idx,1);
+    save("cronograma_prod_v3", prodItems);
+    renderAll();
+  };
+
+  window.finalizarPack = function(id){
+    var idx = packItems.findIndex(function(i){ return i.id === id; });
+    if(idx<0) return;
+    var it = packItems[idx];
+    var fin = Date.now();
+    historial.unshift({
+      id: nextHistId++, tipo:"Empaque", producto:it.producto, operario:it.operario,
+      inicioTxt: fmtHora(it.creado), finTxt: fmtHora(fin),
+      duracionRealMin: it.creado!=null ? Math.round((fin-it.creado)/60000) : null,
+      duracionEstMin: it.duracionMin
+    });
+    save("cronograma_historial_v1", historial);
+    packItems.splice(idx,1);
+    save("cronograma_pack_v3", packItems);
+    renderAll();
+  };
+
+  /* ---------------- formularios ---------------- */
 
   document.getElementById("formProd").addEventListener("submit", function(ev){
     ev.preventDefault();
     prodItems.push({
       id: nextProdId++,
-      producto: document.getElementById("pProducto").value.trim(),
+      producto: document.getElementById("pProducto").value,
       fecha: document.getElementById("pFecha").value || TODAY,
-      operario: document.getElementById("pOperario").value.trim(),
+      operario: document.getElementById("pOperario").value,
       cantidad: Number(document.getElementById("pCantidad").value || 0),
       maquina: document.getElementById("pMaquina").value.trim(),
-      estado: document.getElementById("pEstado").value
+      estado: document.getElementById("pEstado").value,
+      duracionMin: Math.round(Number(document.getElementById("pDuracion").value || 3)*60),
+      creado: Date.now(),
+      inicio: null
     });
-    save("cronograma_prod_v1", prodItems);
+    save("cronograma_prod_v3", prodItems);
     ev.target.reset();
     document.getElementById("pFecha").value = TODAY;
     document.getElementById("pEstado").value = "nuevo";
+    document.getElementById("pDuracion").value = 3;
     renderAll();
     closeModal("modalProd");
   });
 
   document.getElementById("formPack").addEventListener("submit", function(ev){
     ev.preventDefault();
+    var durVal = document.getElementById("kDuracion").value;
     packItems.push({
       id: nextPackId++,
-      producto: document.getElementById("kProducto").value.trim(),
+      producto: document.getElementById("kProducto").value,
       fecha: document.getElementById("kFecha").value || TODAY,
-      operario: document.getElementById("kOperario").value.trim(),
+      operario: document.getElementById("kOperario").value,
       cuarto: Number(document.getElementById("kCuarto").value || 0),
       galon: Number(document.getElementById("kGalon").value || 0),
       balde: Number(document.getElementById("kBalde").value || 0),
       cunete: Number(document.getElementById("kCunete").value || 0),
-      nota: document.getElementById("kNota").value.trim()
+      nota: document.getElementById("kNota").value.trim(),
+      duracionMin: durVal ? Math.round(Number(durVal)*60) : null,
+      creado: Date.now()
     });
-    save("cronograma_pack_v1", packItems);
+    save("cronograma_pack_v3", packItems);
     ev.target.reset();
     document.getElementById("kFecha").value = TODAY;
     renderAll();
@@ -802,6 +1065,8 @@
     }
   });
 
+  /* ---------------- vistas (oficina / tv) ---------------- */
+
   window.setView = function(view){
     var isTV = view === "tv";
     document.getElementById("oficina").hidden = isTV;
@@ -812,8 +1077,9 @@
     document.getElementById("navTV").classList.toggle("active", isTV);
     document.getElementById("viewNote").style.display = isTV ? "none" : "block";
     try{ localStorage.setItem("cronograma_view_v1", view); }catch(e){}
-    if(isTV) renderTV();
   };
+
+  /* ---------------- reloj, cronómetros y ticker ---------------- */
 
   function tickClock(){
     var d = new Date();
@@ -824,7 +1090,102 @@
     var meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
     document.getElementById("tvDate").textContent = dias[d.getDay()]+" "+d.getDate()+" de "+meses[d.getMonth()];
   }
-  setInterval(tickClock, 1000*15);
+
+  function updateCountdowns(){
+    prodItems.forEach(function(it){
+      if(it.inicio==null || it.duracionMin==null) return;
+      var t = tiempoEstado(it);
+      var text = (t.restanteMs<=0?"-":"")+fmtMMSS(t.restanteMs);
+      var td = document.getElementById("cdt-prod-"+it.id);
+      if(td){ td.textContent = text; td.className = "cd cd-"+t.state; }
+      var tv = document.getElementById("cdv-"+it.id);
+      if(tv){ tv.textContent = text; tv.className = "tv-cd cd-"+t.state; }
+      var card = document.getElementById("cdcard-"+it.id);
+      if(card){
+        card.className = "tv-card" + (t.state==="alerta" ? " tv-card-alerta" : t.state==="vencido" ? " tv-card-vencido" : "");
+      }
+    });
+  }
+
+  function updateTicker(){
+    var el = document.getElementById("tvTicker");
+    if(!el) return;
+    var alerts = prodItems.filter(function(it){
+      if(it.inicio==null || it.duracionMin==null) return false;
+      return (it.inicio + it.duracionMin*60000 - Date.now()) <= ALERTA_MIN*60000;
+    });
+    if(!alerts.length){ el.hidden = true; return; }
+    el.hidden = false;
+    el.textContent = "⚠ Por vencer: " + alerts.map(function(it){ return it.producto; }).join("   •   ");
+  }
+
+  /* ---------------- sonido de alarma (Web Audio, sin archivos) ---------------- */
+
+  var audioCtx = null, audioEnabled = false, sirenInterval = null;
+
+  function anyProdAlert(){
+    return prodItems.some(function(it){
+      if(it.inicio==null || it.duracionMin==null) return false;
+      return (it.inicio + it.duracionMin*60000 - Date.now()) <= ALERTA_MIN*60000;
+    });
+  }
+
+  function firSirenPulse(){
+    if(!audioCtx) return;
+    try{
+      var t0 = audioCtx.currentTime;
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(600, t0);
+      osc.frequency.linearRampToValueAtTime(920, t0+0.35);
+      osc.frequency.linearRampToValueAtTime(600, t0+0.7);
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.linearRampToValueAtTime(0.22, t0+0.05);
+      gain.gain.linearRampToValueAtTime(0.0001, t0+0.7);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(t0); osc.stop(t0+0.75);
+    }catch(e){}
+  }
+
+  function updateSoundBtn(){
+    var b = document.getElementById("tvSoundBtn");
+    if(!b) return;
+    b.textContent = audioEnabled ? "🔊 Sonido activado" : "🔇 Activar sonido";
+    b.classList.toggle("on", audioEnabled);
+  }
+
+  function manageSiren(){
+    var should = audioEnabled && anyProdAlert();
+    if(should && !sirenInterval){
+      firSirenPulse();
+      sirenInterval = setInterval(firSirenPulse, 1300);
+    } else if(!should && sirenInterval){
+      clearInterval(sirenInterval);
+      sirenInterval = null;
+    }
+  }
+
+  window.toggleAudio = function(){
+    if(audioEnabled){
+      audioEnabled = false;
+    } else {
+      try{
+        if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+        if(audioCtx.state === "suspended") audioCtx.resume();
+        audioEnabled = true;
+      }catch(e){ audioEnabled = false; }
+    }
+    updateSoundBtn();
+    manageSiren();
+  };
+
+  setInterval(function(){
+    tickClock();
+    updateCountdowns();
+    updateTicker();
+    manageSiren();
+  }, 1000);
   tickClock();
 
   document.getElementById("pFecha").value = TODAY;
