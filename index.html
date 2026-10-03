@@ -15,6 +15,7 @@
     --surface:#ffffff;
     --surface-2:#eef1f8;
     --border:#dde3ef;
+    --input-border:#aab6d9;
     --text:#1b2433;
     --muted:#64708a;
     --shadow: 0 1px 2px rgba(16,40,90,.06), 0 8px 24px rgba(16,40,90,.06);
@@ -26,6 +27,7 @@
       --surface:#141f35;
       --surface-2:#182544;
       --border:#283454;
+      --input-border:#45568a;
       --text:#e8ecf5;
       --muted:#93a0bd;
       --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
@@ -37,6 +39,7 @@
     --surface:#141f35;
     --surface-2:#182544;
     --border:#283454;
+    --input-border:#45568a;
     --text:#e8ecf5;
     --muted:#93a0bd;
     --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
@@ -99,10 +102,35 @@
   }
   .card-head h2{font-size:17px;}
   .card-head p{margin:2px 0 0; font-size:12.5px; color:var(--muted);}
+  .card-head-right{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
   .pill-count{
     font-size:12px; font-weight:700; color:var(--azul2); background:var(--surface-2);
     border:1px solid var(--border); padding:3px 10px; border-radius:999px;
   }
+  .btn-add{width:auto; white-space:nowrap; padding:9px 16px;}
+
+  /* ---- floating form (modal) ---- */
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(8,16,34,.55); z-index:60;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .modal-backdrop[hidden]{display:none;}
+  .modal-card{
+    background:var(--surface); border-radius:14px; width:100%; max-width:640px;
+    max-height:90vh; overflow-y:auto; box-shadow:0 24px 70px rgba(0,0,0,.4);
+  }
+  .modal-head{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:16px 18px; border-bottom:1px solid var(--border); position:sticky; top:0;
+    background:var(--surface);
+  }
+  .modal-head h3{font-size:15px; color:var(--azul2); text-wrap:balance;}
+  .modal-close{
+    border:0; background:var(--surface-2); color:var(--muted); cursor:pointer;
+    width:30px; height:30px; border-radius:8px; font-size:15px; flex:none;
+  }
+  .modal-close:hover{color:var(--text); background:var(--border);}
+  .modal-card form.entry{border-bottom:0;}
 
   form.entry{
     display:grid; gap:10px; padding:16px 18px; border-bottom:1px solid var(--border);
@@ -113,10 +141,12 @@
   form.entry .field.span2{grid-column:span 2;}
   form.entry label{font-size:11px; font-weight:700; color:var(--muted); letter-spacing:.03em; text-transform:uppercase;}
   form.entry input, form.entry select{
-    border:1px solid var(--border); border-radius:8px; padding:8px 9px; font-size:13.5px;
+    border:1.5px solid var(--input-border); border-radius:8px; padding:9px 10px; font-size:13.5px;
     background:var(--surface); color:var(--text); font-family:inherit;
+    box-shadow:0 1px 2px rgba(16,40,90,.06);
   }
-  form.entry input:focus, form.entry select:focus{outline:2px solid var(--azul2); outline-offset:1px;}
+  form.entry input::placeholder{color:var(--muted); opacity:.85;}
+  form.entry input:focus, form.entry select:focus{outline:2px solid var(--azul2); outline-offset:1px; border-color:var(--azul2);}
   .estado-opt{display:flex; align-items:center; gap:8px;}
   .dot{width:9px; height:9px; border-radius:50%; flex:none; display:inline-block;}
   .dot-urgente{background:var(--rojo);}
@@ -320,43 +350,11 @@
           <h2>Cronograma de producción</h2>
           <p>Lo que el equipo de producción debe hacer, y en qué va cada orden.</p>
         </div>
-        <span class="pill-count" id="prodCount">0 órdenes</span>
+        <div class="card-head-right">
+          <span class="pill-count" id="prodCount">0 órdenes</span>
+          <button class="btn btn-primary btn-add" type="button" onclick="openModal('modalProd')">+ Agregar orden</button>
+        </div>
       </div>
-
-      <form class="entry" id="formProd">
-        <div class="field span2">
-          <label for="pProducto">Producto a realizar</label>
-          <input id="pProducto" list="dlProductos" required placeholder="Ej. Vinilo Tipo 1 Blanco">
-        </div>
-        <div class="field">
-          <label for="pFecha">Fecha</label>
-          <input id="pFecha" type="date" required>
-        </div>
-        <div class="field">
-          <label for="pOperario">Operario</label>
-          <input id="pOperario" list="dlOperarios" required placeholder="Nombre">
-        </div>
-        <div class="field">
-          <label for="pCantidad">Cantidad (gal)</label>
-          <input id="pCantidad" type="number" min="0" step="1" required placeholder="0">
-        </div>
-        <div class="field">
-          <label for="pMaquina">Maquinaria</label>
-          <input id="pMaquina" list="dlMaquinas" required placeholder="Ej. Mezcladora 1">
-        </div>
-        <div class="field span2">
-          <label for="pEstado">Estado</label>
-          <select id="pEstado" required>
-            <option value="urgente">🔴 Urgente</option>
-            <option value="proceso">🟢 En proceso</option>
-            <option value="stop">🟠 Stop</option>
-            <option value="nuevo" selected>🔵 Nuevo</option>
-          </select>
-        </div>
-        <div class="field actions span2">
-          <button class="btn btn-primary" type="submit">+ Agregar al cronograma</button>
-        </div>
-      </form>
 
       <div class="tbl-scroll">
         <table class="data">
@@ -368,9 +366,73 @@
           </thead>
           <tbody id="prodBody"></tbody>
         </table>
-        <div class="empty" id="prodEmpty" hidden>Todavía no hay órdenes de producción. Agrega la primera arriba.</div>
+        <div class="empty" id="prodEmpty" hidden>Todavía no hay órdenes de producción. Dale clic a "+ Agregar orden" arriba.</div>
       </div>
     </section>
+
+    <div class="modal-backdrop" id="modalProd" hidden onclick="if(event.target===this) closeModal('modalProd')">
+      <div class="modal-card">
+        <div class="modal-head">
+          <h3>📝 Llenar para agregar una nueva orden de producción</h3>
+          <button class="modal-close" type="button" onclick="closeModal('modalProd')">✕</button>
+        </div>
+        <form class="entry" id="formProd">
+          <div class="field span2">
+            <label for="pProducto">Producto a realizar</label>
+            <select id="pProducto" required>
+              <option value="" disabled selected>Seleccione un producto...</option>
+              <option>Vinilo Tipo 1 Blanco</option>
+              <option>Vinilo Tipo 2 Blanco</option>
+              <option>Estuco Interior</option>
+              <option>Estuco Exterior</option>
+              <option>Base Clara T1</option>
+              <option>Base Clara T2</option>
+              <option>Base Clara T3</option>
+              <option>Esmalte Sintético Negro</option>
+              <option>Esmalte Sintético Blanco</option>
+              <option>Anticorrosivo Rojo Óxido</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="pFecha">Fecha</label>
+            <input id="pFecha" type="date" required>
+          </div>
+          <div class="field">
+            <label for="pOperario">Operario</label>
+            <select id="pOperario" required>
+              <option value="" disabled selected>Seleccione un operario...</option>
+              <option>Jhon Pérez</option>
+              <option>Marta Gómez</option>
+              <option>Carlos Ruiz</option>
+              <option>Luisa Cárdenas</option>
+              <option>Andrés Soto</option>
+              <option>Pedro Martínez</option>
+              <option>Sofía Ramírez</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="pCantidad">Cantidad (gal)</label>
+            <input id="pCantidad" type="number" min="0" step="1" required placeholder="0">
+          </div>
+          <div class="field">
+            <label for="pMaquina">Maquinaria</label>
+            <input id="pMaquina" list="dlMaquinas" required placeholder="Ej. Mezcladora 1">
+          </div>
+          <div class="field span2">
+            <label for="pEstado">Estado</label>
+            <select id="pEstado" required>
+              <option value="urgente">🔴 Urgente</option>
+              <option value="proceso">🟢 En proceso</option>
+              <option value="stop">🟠 Stop</option>
+              <option value="nuevo" selected>🔵 Nuevo</option>
+            </select>
+          </div>
+          <div class="field actions span2">
+            <button class="btn btn-primary" type="submit">Guardar orden</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <section class="card" style="margin-top:18px;">
       <div class="card-head">
@@ -378,46 +440,11 @@
           <h2>Cronograma de empaque</h2>
           <p>Qué se empaca, en qué presentación y cuánto.</p>
         </div>
-        <span class="pill-count" id="packCount">0 registros</span>
+        <div class="card-head-right">
+          <span class="pill-count" id="packCount">0 registros</span>
+          <button class="btn btn-primary btn-add" type="button" onclick="openModal('modalPack')">+ Agregar registro</button>
+        </div>
       </div>
-
-      <form class="entry" id="formPack" style="grid-template-columns:repeat(8,minmax(0,1fr));">
-        <div class="field" style="grid-column:span 2;">
-          <label for="kProducto">Producto final</label>
-          <input id="kProducto" list="dlProductos" required placeholder="Ej. Estuco Interior">
-        </div>
-        <div class="field">
-          <label for="kFecha">Fecha</label>
-          <input id="kFecha" type="date" required>
-        </div>
-        <div class="field">
-          <label for="kOperario">Operario</label>
-          <input id="kOperario" list="dlOperarios" required placeholder="Nombre">
-        </div>
-        <div class="field">
-          <label for="kCuarto">1/4</label>
-          <input id="kCuarto" type="number" min="0" step="1" value="0">
-        </div>
-        <div class="field">
-          <label for="kGalon">Galón</label>
-          <input id="kGalon" type="number" min="0" step="1" value="0">
-        </div>
-        <div class="field">
-          <label for="kBalde">Balde</label>
-          <input id="kBalde" type="number" min="0" step="1" value="0">
-        </div>
-        <div class="field">
-          <label for="kCunete">Cuñete</label>
-          <input id="kCunete" type="number" min="0" step="1" value="0">
-        </div>
-        <div class="field span2">
-          <label for="kNota">Nota</label>
-          <input id="kNota" placeholder="Opcional">
-        </div>
-        <div class="field actions" style="grid-column:span 2;">
-          <button class="btn btn-primary" type="submit">+ Agregar al empaque</button>
-        </div>
-      </form>
 
       <div class="tbl-scroll">
         <table class="data">
@@ -430,9 +457,76 @@
           </thead>
           <tbody id="packBody"></tbody>
         </table>
-        <div class="empty" id="packEmpty" hidden>Todavía no hay registros de empaque. Agrega el primero arriba.</div>
+        <div class="empty" id="packEmpty" hidden>Todavía no hay registros de empaque. Dale clic a "+ Agregar registro" arriba.</div>
       </div>
     </section>
+
+    <div class="modal-backdrop" id="modalPack" hidden onclick="if(event.target===this) closeModal('modalPack')">
+      <div class="modal-card">
+        <div class="modal-head">
+          <h3>📝 Llenar para agregar un nuevo registro de empaque</h3>
+          <button class="modal-close" type="button" onclick="closeModal('modalPack')">✕</button>
+        </div>
+        <form class="entry" id="formPack" style="grid-template-columns:repeat(8,minmax(0,1fr));">
+          <div class="field" style="grid-column:span 2;">
+            <label for="kProducto">Producto final</label>
+            <select id="kProducto" required>
+              <option value="" disabled selected>Seleccione un producto...</option>
+              <option>Vinilo Tipo 1 Blanco</option>
+              <option>Vinilo Tipo 2 Blanco</option>
+              <option>Estuco Interior</option>
+              <option>Estuco Exterior</option>
+              <option>Base Clara T1</option>
+              <option>Base Clara T2</option>
+              <option>Base Clara T3</option>
+              <option>Esmalte Sintético Negro</option>
+              <option>Esmalte Sintético Blanco</option>
+              <option>Anticorrosivo Rojo Óxido</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="kFecha">Fecha</label>
+            <input id="kFecha" type="date" required>
+          </div>
+          <div class="field">
+            <label for="kOperario">Operario</label>
+            <select id="kOperario" required>
+              <option value="" disabled selected>Seleccione un operario...</option>
+              <option>Jhon Pérez</option>
+              <option>Marta Gómez</option>
+              <option>Carlos Ruiz</option>
+              <option>Luisa Cárdenas</option>
+              <option>Andrés Soto</option>
+              <option>Pedro Martínez</option>
+              <option>Sofía Ramírez</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="kCuarto">1/4</label>
+            <input id="kCuarto" type="number" min="0" step="1" value="0">
+          </div>
+          <div class="field">
+            <label for="kGalon">Galón</label>
+            <input id="kGalon" type="number" min="0" step="1" value="0">
+          </div>
+          <div class="field">
+            <label for="kBalde">Balde</label>
+            <input id="kBalde" type="number" min="0" step="1" value="0">
+          </div>
+          <div class="field">
+            <label for="kCunete">Cuñete</label>
+            <input id="kCunete" type="number" min="0" step="1" value="0">
+          </div>
+          <div class="field span2">
+            <label for="kNota">Nota</label>
+            <input id="kNota" placeholder="Opcional">
+          </div>
+          <div class="field actions" style="grid-column:span 2;">
+            <button class="btn btn-primary" type="submit">Guardar registro</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <footer class="hint">Vista para quien organiza el trabajo del día. Cambia a "Pantalla bodega" para ver el tablero del televisor.</footer>
   </div>
@@ -484,17 +578,9 @@
     </div>
   </div>
 
-  <datalist id="dlOperarios">
-    <option value="Jhon Pérez"><option value="Marta Gómez"><option value="Carlos Ruiz">
-    <option value="Luisa Cárdenas"><option value="Andrés Soto">
-  </datalist>
   <datalist id="dlMaquinas">
     <option value="Mezcladora 1"><option value="Mezcladora 2"><option value="Molino">
     <option value="Dispersor"><option value="Envasadora">
-  </datalist>
-  <datalist id="dlProductos">
-    <option value="Vinilo Tipo 1 Blanco"><option value="Estuco Interior">
-    <option value="Base Clara T2"><option value="Esmalte Sintético Negro">
   </datalist>
 
   <nav class="bottom-nav">
@@ -678,6 +764,7 @@
     document.getElementById("pFecha").value = TODAY;
     document.getElementById("pEstado").value = "nuevo";
     renderAll();
+    closeModal("modalProd");
   });
 
   document.getElementById("formPack").addEventListener("submit", function(ev){
@@ -697,6 +784,22 @@
     ev.target.reset();
     document.getElementById("kFecha").value = TODAY;
     renderAll();
+    closeModal("modalPack");
+  });
+
+  window.openModal = function(id){
+    document.getElementById(id).hidden = false;
+    document.body.style.overflow = "hidden";
+  };
+  window.closeModal = function(id){
+    document.getElementById(id).hidden = true;
+    document.body.style.overflow = "";
+  };
+  document.addEventListener("keydown", function(ev){
+    if(ev.key === "Escape"){
+      closeModal("modalProd");
+      closeModal("modalPack");
+    }
   });
 
   window.setView = function(view){
