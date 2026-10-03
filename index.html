@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cronograma de Producción · Pintatec</title>
+<style>
+  :root{
+    --azul:#10285a;
+    --azul2:#1c3f82;
+    --naranja:#f2760f;
+    --rojo:#d7263d;
+    --verde:#1f9d55;
+    --bg:#f3f5fb;
+    --surface:#ffffff;
+    --surface-2:#eef1f8;
+    --border:#dde3ef;
+    --text:#1b2433;
+    --muted:#64708a;
+    --shadow: 0 1px 2px rgba(16,40,90,.06), 0 8px 24px rgba(16,40,90,.06);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0d1626;
+      --surface:#141f35;
+      --surface-2:#182544;
+      --border:#283454;
+      --text:#e8ecf5;
+      --muted:#93a0bd;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0d1626;
+    --surface:#141f35;
+    --surface-2:#182544;
+    --border:#283454;
+    --text:#e8ecf5;
+    --muted:#93a0bd;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Segoe UI","Segoe UI Semibold",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    padding-inline:16px;
+    padding-block:20px 40px;
+  }
+  h1,h2,h3{text-wrap:balance; margin:0;}
+  table{font-variant-numeric:tabular-nums;}
+
+  .wrap{max-width:1180px; margin-inline:auto; display:flex; flex-direction:column; gap:18px;}
+
+  /* ---- top bar ---- */
+  .topbar{
+    display:flex; flex-wrap:wrap; gap:14px;
+    align-items:center; justify-content:space-between;
+    background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    padding:14px 18px; box-shadow:var(--shadow);
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand .mark{
+    width:34px; height:34px; border-radius:9px; flex:none;
+    background:linear-gradient(135deg,var(--azul),var(--azul2));
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:700; font-size:15px;
+  }
+  .brand .names{display:flex; flex-direction:column; line-height:1.15;}
+  .brand .names b{font-size:15px;}
+  .brand .names span{font-size:12px; color:var(--muted);}
+
+  .tabs{display:flex; gap:6px; background:var(--surface-2); padding:4px; border-radius:10px;}
+  .tabs button{
+    border:0; background:transparent; color:var(--muted); font-weight:600; font-size:13px;
+    padding:8px 14px; border-radius:8px; cursor:pointer; font-family:inherit;
+  }
+  .tabs button.active{background:var(--azul); color:#fff;}
+
+  .note{
+    font-size:12.5px; color:var(--muted); background:var(--surface-2);
+    border:1px dashed var(--border); border-radius:10px; padding:10px 14px;
+  }
+  .note b{color:var(--text);}
+
+  /* ---- oficina cards ---- */
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    box-shadow:var(--shadow); overflow:hidden;
+  }
+  .card-head{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    padding:16px 18px; border-bottom:1px solid var(--border);
+  }
+  .card-head h2{font-size:17px;}
+  .card-head p{margin:2px 0 0; font-size:12.5px; color:var(--muted);}
+  .pill-count{
+    font-size:12px; font-weight:700; color:var(--azul2); background:var(--surface-2);
+    border:1px solid var(--border); padding:3px 10px; border-radius:999px;
+  }
+
+  form.entry{
+    display:grid; gap:10px; padding:16px 18px; border-bottom:1px solid var(--border);
+    grid-template-columns:repeat(6,minmax(0,1fr));
+    background:var(--surface-2);
+  }
+  form.entry .field{display:flex; flex-direction:column; gap:4px;}
+  form.entry .field.span2{grid-column:span 2;}
+  form.entry label{font-size:11px; font-weight:700; color:var(--muted); letter-spacing:.03em; text-transform:uppercase;}
+  form.entry input, form.entry select{
+    border:1px solid var(--border); border-radius:8px; padding:8px 9px; font-size:13.5px;
+    background:var(--surface); color:var(--text); font-family:inherit;
+  }
+  form.entry input:focus, form.entry select:focus{outline:2px solid var(--azul2); outline-offset:1px;}
+  .estado-opt{display:flex; align-items:center; gap:8px;}
+  .dot{width:9px; height:9px; border-radius:50%; flex:none; display:inline-block;}
+  .dot-urgente{background:var(--rojo);}
+  .dot-proceso{background:var(--verde);}
+  .dot-stop{background:var(--naranja);}
+  .dot-nuevo{background:var(--azul2);}
+
+  form.entry .actions{display:flex; align-items:flex-end;}
+  .btn{
+    border:0; border-radius:8px; padding:9px 16px; font-weight:700; font-size:13px;
+    cursor:pointer; font-family:inherit; width:100%;
+  }
+  .btn-primary{background:var(--azul); color:#fff;}
+  .btn-primary:hover{background:var(--azul2);}
+  .btn-ghost{background:transparent; color:var(--muted); border:1px solid var(--border);}
+  .btn-ghost:hover{color:var(--text); border-color:var(--muted);}
+
+  .tbl-scroll{overflow-x:auto;}
+  table.data{width:100%; border-collapse:collapse; font-size:12.5px; min-width:760px;}
+  table.data th{
+    text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.03em;
+    color:var(--muted); padding:10px 14px; border-bottom:1px solid var(--border); white-space:nowrap;
+  }
+  table.data td{padding:10px 14px; border-bottom:1px solid var(--border); vertical-align:middle;}
+  table.data tbody tr:hover{background:var(--surface-2);}
+  table.data td.num{font-variant-numeric:tabular-nums; text-align:right;}
+  .muted-cell{color:var(--muted);}
+
+  .badge{
+    display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:11.5px;
+    padding:4px 10px; border-radius:999px; white-space:nowrap;
+  }
+  .badge-urgente{background:rgba(215,38,61,.12); color:var(--rojo);}
+  .badge-proceso{background:rgba(31,157,85,.14); color:var(--verde);}
+  .badge-stop{background:rgba(242,118,15,.14); color:#b35a0c;}
+  .badge-nuevo{background:rgba(28,63,130,.12); color:var(--azul2);}
+  .badge-stop{color:#c7680f;}
+
+  .del{
+    border:0; background:transparent; color:var(--muted); cursor:pointer; font-size:15px;
+    width:26px; height:26px; border-radius:7px; line-height:1;
+  }
+  .del:hover{background:rgba(215,38,61,.12); color:var(--rojo);}
+
+  .empty{padding:24px 18px; color:var(--muted); font-size:13px; text-align:center;}
+
+  footer.hint{font-size:12px; color:var(--muted); text-align:center; padding-top:4px;}
+
+  @media (max-width:760px){
+    form.entry{grid-template-columns:repeat(2,minmax(0,1fr));}
+    form.entry .field.span2{grid-column:span 2;}
+  }
+
+  /* ---- app-style bottom nav (phones) ---- */
+  .bottom-nav{display:none;}
+  @media (max-width:760px){
+    .topbar .tabs{display:none;}
+    .topbar{justify-content:center; text-align:center;}
+    body{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px));}
+
+    form.entry{grid-template-columns:repeat(1,minmax(0,1fr)) !important;}
+    form.entry .field{grid-column:span 1 !important;}
+    form.entry input, form.entry select{padding:12px 11px; font-size:16px;}
+    .btn{padding:13px 16px; font-size:14.5px;}
+    .card-head{flex-direction:column; align-items:flex-start;}
+    table.data{min-width:620px;}
+
+    .bottom-nav{
+      display:flex; position:fixed; left:0; right:0; bottom:0; z-index:20;
+      background:var(--surface); border-top:1px solid var(--border);
+      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+      gap:8px; box-shadow:0 -6px 20px rgba(16,40,90,.08);
+    }
+    .bottom-nav button{
+      flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
+      border:0; background:transparent; color:var(--muted); font-family:inherit;
+      font-size:11px; font-weight:700; padding:7px 4px; border-radius:10px; cursor:pointer;
+      min-height:48px;
+    }
+    .bottom-nav button .ic{font-size:20px; line-height:1;}
+    .bottom-nav button.active{color:var(--azul2); background:var(--surface-2);}
+  }
+
+  /* ================= TV / warehouse board ================= */
+  #tv{
+    --tvbg:#0a1733;
+    --tvbg2:#0f2050;
+    --tvline:#24315c;
+    --tvtext:#eef2ff;
+    --tvmuted:#8ea0d4;
+    background:var(--tvbg);
+    color:var(--tvtext);
+    border-radius:16px;
+    min-height:640px;
+    padding:20px 22px 26px;
+    display:flex; flex-direction:column; gap:16px;
+    box-shadow:0 20px 60px rgba(5,10,30,.45);
+  }
+  .tv-head{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+  .tv-brand{display:flex; align-items:center; gap:12px;}
+  .tv-brand .mark{
+    width:40px; height:40px; border-radius:10px;
+    background:linear-gradient(135deg,var(--naranja),#ffb15c);
+    display:flex; align-items:center; justify-content:center; font-weight:800; color:#2a1400; font-size:17px;
+  }
+  .tv-brand b{font-size:19px; letter-spacing:.02em;}
+  .tv-brand span{font-size:12px; color:var(--tvmuted); display:block;}
+  .tv-live{
+    display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700;
+    color:#ffb15c; letter-spacing:.08em; text-transform:uppercase;
+  }
+  .tv-live .ping{width:8px; height:8px; border-radius:50%; background:#ff5a5a; box-shadow:0 0 0 0 rgba(255,90,90,.6); animation:ping 1.6s infinite;}
+  @keyframes ping{
+    0%{box-shadow:0 0 0 0 rgba(255,90,90,.55);}
+    70%{box-shadow:0 0 0 9px rgba(255,90,90,0);}
+    100%{box-shadow:0 0 0 0 rgba(255,90,90,0);}
+  }
+  .tv-clock{font-size:22px; font-weight:700; font-variant-numeric:tabular-nums;}
+  .tv-date{font-size:12px; color:var(--tvmuted); text-transform:capitalize;}
+
+  .tv-board{
+    display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; flex:1;
+  }
+  .lane{
+    background:var(--tvbg2); border:1px solid var(--tvline); border-radius:12px;
+    display:flex; flex-direction:column; min-height:260px; overflow:hidden;
+  }
+  .lane-head{
+    padding:12px 14px; display:flex; align-items:center; justify-content:space-between;
+    border-bottom:3px solid transparent;
+  }
+  .lane-head b{font-size:14px; letter-spacing:.04em; text-transform:uppercase;}
+  .lane-head .n{font-size:12px; font-weight:800; background:rgba(255,255,255,.12); padding:2px 9px; border-radius:999px;}
+  .lane[data-k="urgente"] .lane-head{border-color:var(--rojo);}
+  .lane[data-k="proceso"] .lane-head{border-color:var(--verde);}
+  .lane[data-k="stop"] .lane-head{border-color:var(--naranja);}
+  .lane[data-k="nuevo"] .lane-head{border-color:#5b7fe0;}
+  .lane-body{padding:10px; display:flex; flex-direction:column; gap:8px; overflow-y:auto;}
+  .tv-card{
+    background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+    border-radius:10px; padding:10px 11px; display:flex; flex-direction:column; gap:4px;
+  }
+  .tv-card .p{font-size:15px; font-weight:700; text-wrap:balance;}
+  .tv-card .meta{display:flex; flex-wrap:wrap; font-size:11.5px; color:var(--tvmuted); gap:3px 10px;}
+  .tv-card .meta b{color:var(--tvtext); font-weight:600;}
+  .tv-empty-lane{color:var(--tvmuted); font-size:12px; text-align:center; padding:18px 8px;}
+
+  .tv-pack{
+    background:var(--tvbg2); border:1px solid var(--tvline); border-radius:12px; padding:12px 14px;
+  }
+  .tv-pack-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;}
+  .tv-pack-head b{font-size:13px; letter-spacing:.04em; text-transform:uppercase; color:var(--tvmuted);}
+  .tv-pack-row{display:grid; grid-template-columns:1.6fr .9fr 1fr .5fr .5fr .5fr .5fr; gap:10px; align-items:center; padding:7px 4px; font-size:13px; border-top:1px solid var(--tvline);}
+  .tv-pack-row.head{border-top:0; color:var(--tvmuted); font-size:11px; text-transform:uppercase; letter-spacing:.03em;}
+  .tv-pack-row .num{text-align:center; font-weight:700; font-variant-numeric:tabular-nums;}
+  .tv-pack-empty{color:var(--tvmuted); font-size:12.5px; text-align:center; padding:10px;}
+
+  @media (max-width:900px){
+    .tv-board{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .tv-pack-row{grid-template-columns:1.3fr .8fr 1fr .5fr .5fr .5fr .5fr; font-size:12px;}
+  }
+  @media (max-width:560px){
+    #tv{padding:16px 14px 20px; min-height:0;}
+    .tv-board{grid-template-columns:1fr; gap:10px;}
+    .lane{min-height:0;}
+    .lane-body{max-height:none;}
+    .tv-pack-row{grid-template-columns:1.2fr 1fr .6fr .6fr .6fr .6fr; font-size:11.5px;}
+    .tv-pack-row span:nth-child(3){display:none;}
+    .tv-clock{font-size:19px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="mark">PT</div>
+      <div class="names">
+        <b>Cronograma de Producción y Empaque</b>
+        <span>Pintatec · maqueta de interacción</span>
+      </div>
+    </div>
+    <div class="tabs" role="tablist">
+      <button id="tabOficina" class="active" onclick="setView('oficina')" type="button">🖥️ Vista oficina</button>
+      <button id="tabTV" onclick="setView('tv')" type="button">📺 Pantalla bodega</button>
+    </div>
+  </div>
+
+  <div class="note" id="viewNote">
+    <b>Maqueta de demostración.</b> Los datos se guardan solo en este navegador para que puedas probar el formulario y la tabla; aún no están conectados al sistema. Usa el botón de arriba para ver cómo se vería en el televisor de bodega.
+  </div>
+
+  <!-- ===================== VISTA OFICINA ===================== -->
+  <div id="oficina">
+
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <h2>Cronograma de producción</h2>
+          <p>Lo que el equipo de producción debe hacer, y en qué va cada orden.</p>
+        </div>
+        <span class="pill-count" id="prodCount">0 órdenes</span>
+      </div>
+
+      <form class="entry" id="formProd">
+        <div class="field span2">
+          <label for="pProducto">Producto a realizar</label>
+          <input id="pProducto" list="dlProductos" required placeholder="Ej. Vinilo Tipo 1 Blanco">
+        </div>
+        <div class="field">
+          <label for="pFecha">Fecha</label>
+          <input id="pFecha" type="date" required>
+        </div>
+        <div class="field">
+          <label for="pOperario">Operario</label>
+          <input id="pOperario" list="dlOperarios" required placeholder="Nombre">
+        </div>
+        <div class="field">
+          <label for="pCantidad">Cantidad (gal)</label>
+          <input id="pCantidad" type="number" min="0" step="1" required placeholder="0">
+        </div>
+        <div class="field">
+          <label for="pMaquina">Maquinaria</label>
+          <input id="pMaquina" list="dlMaquinas" required placeholder="Ej. Mezcladora 1">
+        </div>
+        <div class="field span2">
+          <label for="pEstado">Estado</label>
+          <select id="pEstado" required>
+            <option value="urgente">🔴 Urgente</option>
+            <option value="proceso">🟢 En proceso</option>
+            <option value="stop">🟠 Stop</option>
+            <option value="nuevo" selected>🔵 Nuevo</option>
+          </select>
+        </div>
+        <div class="field actions span2">
+          <button class="btn btn-primary" type="submit">+ Agregar al cronograma</button>
+        </div>
+      </form>
+
+      <div class="tbl-scroll">
+        <table class="data">
+          <thead>
+            <tr>
+              <th>Producto a realizar</th><th>Fecha</th><th>Operario</th>
+              <th>Cantidad</th><th>Maquinaria</th><th>Estado</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="prodBody"></tbody>
+        </table>
+        <div class="empty" id="prodEmpty" hidden>Todavía no hay órdenes de producción. Agrega la primera arriba.</div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:18px;">
+      <div class="card-head">
+        <div>
+          <h2>Cronograma de empaque</h2>
+          <p>Qué se empaca, en qué presentación y cuánto.</p>
+        </div>
+        <span class="pill-count" id="packCount">0 registros</span>
+      </div>
+
+      <form class="entry" id="formPack" style="grid-template-columns:repeat(8,minmax(0,1fr));">
+        <div class="field" style="grid-column:span 2;">
+          <label for="kProducto">Producto final</label>
+          <input id="kProducto" list="dlProductos" required placeholder="Ej. Estuco Interior">
+        </div>
+        <div class="field">
+          <label for="kFecha">Fecha</label>
+          <input id="kFecha" type="date" required>
+        </div>
+        <div class="field">
+          <label for="kOperario">Operario</label>
+          <input id="kOperario" list="dlOperarios" required placeholder="Nombre">
+        </div>
+        <div class="field">
+          <label for="kCuarto">1/4</label>
+          <input id="kCuarto" type="number" min="0" step="1" value="0">
+        </div>
+        <div class="field">
+          <label for="kGalon">Galón</label>
+          <input id="kGalon" type="number" min="0" step="1" value="0">
+        </div>
+        <div class="field">
+          <label for="kBalde">Balde</label>
+          <input id="kBalde" type="number" min="0" step="1" value="0">
+        </div>
+        <div class="field">
+          <label for="kCunete">Cuñete</label>
+          <input id="kCunete" type="number" min="0" step="1" value="0">
+        </div>
+        <div class="field span2">
+          <label for="kNota">Nota</label>
+          <input id="kNota" placeholder="Opcional">
+        </div>
+        <div class="field actions" style="grid-column:span 2;">
+          <button class="btn btn-primary" type="submit">+ Agregar al empaque</button>
+        </div>
+      </form>
+
+      <div class="tbl-scroll">
+        <table class="data">
+          <thead>
+            <tr>
+              <th>Producto final</th><th>Fecha</th><th>Operario</th>
+              <th class="num">1/4</th><th class="num">Galón</th><th class="num">Balde</th><th class="num">Cuñete</th>
+              <th>Nota</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="packBody"></tbody>
+        </table>
+        <div class="empty" id="packEmpty" hidden>Todavía no hay registros de empaque. Agrega el primero arriba.</div>
+      </div>
+    </section>
+
+    <footer class="hint">Vista para quien organiza el trabajo del día. Cambia a "Pantalla bodega" para ver el tablero del televisor.</footer>
+  </div>
+
+  <!-- ===================== VISTA TV ===================== -->
+  <div id="tv" hidden>
+    <div class="tv-head">
+      <div class="tv-brand">
+        <div class="mark">PT</div>
+        <div>
+          <b>PINTATEC · Bodega de producción</b>
+          <span>Cronograma del día</span>
+        </div>
+      </div>
+      <div class="tv-live"><span class="ping"></span> En vivo</div>
+      <div style="text-align:right;">
+        <div class="tv-clock" id="tvClock">--:--</div>
+        <div class="tv-date" id="tvDate">—</div>
+      </div>
+    </div>
+
+    <div class="tv-board">
+      <div class="lane" data-k="urgente">
+        <div class="lane-head"><b style="color:#ff8a94;">🔴 Urgente</b><span class="n" id="nUrgente">0</span></div>
+        <div class="lane-body" id="laneUrgente"></div>
+      </div>
+      <div class="lane" data-k="proceso">
+        <div class="lane-head"><b style="color:#7ee6a6;">🟢 En proceso</b><span class="n" id="nProceso">0</span></div>
+        <div class="lane-body" id="laneProceso"></div>
+      </div>
+      <div class="lane" data-k="stop">
+        <div class="lane-head"><b style="color:#ffb15c;">🟠 Stop</b><span class="n" id="nStop">0</span></div>
+        <div class="lane-body" id="laneStop"></div>
+      </div>
+      <div class="lane" data-k="nuevo">
+        <div class="lane-head"><b style="color:#9db4f2;">🔵 Nuevo</b><span class="n" id="nNuevo">0</span></div>
+        <div class="lane-body" id="laneNuevo"></div>
+      </div>
+    </div>
+
+    <div class="tv-pack">
+      <div class="tv-pack-head"><b>Empaque de hoy</b><span style="font-size:11px; color:var(--tvmuted);" id="tvPackDate">—</span></div>
+      <div class="tv-pack-row head">
+        <span>Producto</span><span>Operario</span><span>Nota</span>
+        <span class="num">1/4</span><span class="num">Galón</span><span class="num">Balde</span><span class="num">Cuñete</span>
+      </div>
+      <div id="tvPackBody"></div>
+      <div class="tv-pack-empty" id="tvPackEmpty" hidden>Sin empaque programado para hoy.</div>
+    </div>
+  </div>
+
+  <datalist id="dlOperarios">
+    <option value="Jhon Pérez"><option value="Marta Gómez"><option value="Carlos Ruiz">
+    <option value="Luisa Cárdenas"><option value="Andrés Soto">
+  </datalist>
+  <datalist id="dlMaquinas">
+    <option value="Mezcladora 1"><option value="Mezcladora 2"><option value="Molino">
+    <option value="Dispersor"><option value="Envasadora">
+  </datalist>
+  <datalist id="dlProductos">
+    <option value="Vinilo Tipo 1 Blanco"><option value="Estuco Interior">
+    <option value="Base Clara T2"><option value="Esmalte Sintético Negro">
+  </datalist>
+
+  <nav class="bottom-nav">
+    <button id="navOficina" class="active" onclick="setView('oficina')" type="button">
+      <span class="ic">🖥️</span>Oficina
+    </button>
+    <button id="navTV" onclick="setView('tv')" type="button">
+      <span class="ic">📺</span>Bodega
+    </button>
+  </nav>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var ESTADOS = {
+    urgente:{label:"Urgente", badge:"badge-urgente", dot:"dot-urgente"},
+    proceso:{label:"En proceso", badge:"badge-proceso", dot:"dot-proceso"},
+    stop:{label:"Stop", badge:"badge-stop", dot:"dot-stop"},
+    nuevo:{label:"Nuevo", badge:"badge-nuevo", dot:"dot-nuevo"}
+  };
+
+  function todayISO(){
+    var d = new Date();
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  var TODAY = todayISO();
+
+  function seedProd(){
+    return [
+      {id:1, producto:"Vinilo Tipo 1 Blanco", fecha:TODAY, operario:"Jhon Pérez", cantidad:200, maquina:"Mezcladora 1", estado:"urgente"},
+      {id:2, producto:"Estuco Interior", fecha:TODAY, operario:"Marta Gómez", cantidad:80, maquina:"Mezcladora 2", estado:"proceso"},
+      {id:3, producto:"Base Clara T2", fecha:TODAY, operario:"Carlos Ruiz", cantidad:200, maquina:"Mezcladora 1", estado:"stop"},
+      {id:4, producto:"Esmalte Sintético Negro", fecha:TODAY, operario:"Jhon Pérez", cantidad:100, maquina:"Molino", estado:"nuevo"}
+    ];
+  }
+  function seedPack(){
+    return [
+      {id:1, producto:"Vinilo Tipo 1 Blanco", fecha:TODAY, operario:"Luisa Cárdenas", cuarto:40, galon:120, balde:10, cunete:2, nota:"Prioridad ruta norte"},
+      {id:2, producto:"Estuco Interior", fecha:TODAY, operario:"Andrés Soto", cuarto:0, galon:60, balde:5, cunete:0, nota:""}
+    ];
+  }
+
+  function load(key, fallback){
+    try{
+      var raw = localStorage.getItem(key);
+      if(!raw) return fallback();
+      var parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : fallback();
+    }catch(e){ return fallback(); }
+  }
+  function save(key, data){
+    try{ localStorage.setItem(key, JSON.stringify(data)); }catch(e){}
+  }
+
+  var prodItems = load("cronograma_prod_v1", seedProd);
+  var packItems = load("cronograma_pack_v1", seedPack);
+  var nextProdId = prodItems.reduce(function(m,i){return Math.max(m,i.id);},0)+1;
+  var nextPackId = packItems.reduce(function(m,i){return Math.max(m,i.id);},0)+1;
+
+  function fmtFecha(iso){
+    if(!iso) return "—";
+    var p = iso.split("-");
+    if(p.length!==3) return iso;
+    return p[2]+"/"+p[1];
+  }
+  function esc(s){
+    return String(s==null?"":s).replace(/[&<>"]/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];
+    });
+  }
+
+  function renderProd(){
+    var body = document.getElementById("prodBody");
+    var empty = document.getElementById("prodEmpty");
+    document.getElementById("prodCount").textContent = prodItems.length + (prodItems.length===1 ? " orden" : " órdenes");
+    if(!prodItems.length){ body.innerHTML=""; empty.hidden=false; return; }
+    empty.hidden = true;
+    body.innerHTML = prodItems.map(function(it){
+      var e = ESTADOS[it.estado] || ESTADOS.nuevo;
+      return '<tr>'+
+        '<td>'+esc(it.producto)+'</td>'+
+        '<td class="muted-cell">'+fmtFecha(it.fecha)+'</td>'+
+        '<td>'+esc(it.operario)+'</td>'+
+        '<td class="num">'+esc(it.cantidad)+' gal</td>'+
+        '<td class="muted-cell">'+esc(it.maquina)+'</td>'+
+        '<td><span class="badge '+e.badge+'"><span class="dot '+e.dot+'"></span>'+e.label+'</span></td>'+
+        '<td><button class="del" title="Eliminar" onclick="window.__delProd('+it.id+')">✕</button></td>'+
+      '</tr>';
+    }).join("");
+  }
+
+  function renderPack(){
+    var body = document.getElementById("packBody");
+    var empty = document.getElementById("packEmpty");
+    document.getElementById("packCount").textContent = packItems.length + (packItems.length===1 ? " registro" : " registros");
+    if(!packItems.length){ body.innerHTML=""; empty.hidden=false; return; }
+    empty.hidden = true;
+    body.innerHTML = packItems.map(function(it){
+      return '<tr>'+
+        '<td>'+esc(it.producto)+'</td>'+
+        '<td class="muted-cell">'+fmtFecha(it.fecha)+'</td>'+
+        '<td>'+esc(it.operario)+'</td>'+
+        '<td class="num">'+(it.cuarto||0)+'</td>'+
+        '<td class="num">'+(it.galon||0)+'</td>'+
+        '<td class="num">'+(it.balde||0)+'</td>'+
+        '<td class="num">'+(it.cunete||0)+'</td>'+
+        '<td class="muted-cell">'+esc(it.nota||"—")+'</td>'+
+        '<td><button class="del" title="Eliminar" onclick="window.__delPack('+it.id+')">✕</button></td>'+
+      '</tr>';
+    }).join("");
+  }
+
+  function renderTV(){
+    var lanes = {urgente:[], proceso:[], stop:[], nuevo:[]};
+    prodItems.forEach(function(it){ (lanes[it.estado]||lanes.nuevo).push(it); });
+
+    Object.keys(lanes).forEach(function(k){
+      var elBody = document.getElementById("lane"+k.charAt(0).toUpperCase()+k.slice(1));
+      var elN = document.getElementById("n"+k.charAt(0).toUpperCase()+k.slice(1));
+      elN.textContent = lanes[k].length;
+      if(!lanes[k].length){
+        elBody.innerHTML = '<div class="tv-empty-lane">Sin órdenes</div>';
+        return;
+      }
+      elBody.innerHTML = lanes[k].map(function(it){
+        var dateTag = it.fecha === TODAY ? "" : ' <b style="color:#ffb15c;">· '+fmtFecha(it.fecha)+'</b>';
+        return '<div class="tv-card">'+
+          '<div class="p">'+esc(it.producto)+'</div>'+
+          '<div class="meta"><span><b>'+esc(it.cantidad)+' gal</b></span><span>'+esc(it.maquina)+'</span><span>'+esc(it.operario)+'</span>'+dateTag+'</div>'+
+        '</div>';
+      }).join("");
+    });
+
+    var today = packItems.filter(function(it){ return it.fecha === TODAY; });
+    var tvBody = document.getElementById("tvPackBody");
+    var tvEmpty = document.getElementById("tvPackEmpty");
+    document.getElementById("tvPackDate").textContent = "Hoy, " + fmtFecha(TODAY);
+    if(!today.length){
+      tvBody.innerHTML = ""; tvEmpty.hidden = false;
+    } else {
+      tvEmpty.hidden = true;
+      tvBody.innerHTML = today.map(function(it){
+        return '<div class="tv-pack-row">'+
+          '<span>'+esc(it.producto)+'</span><span>'+esc(it.operario)+'</span><span style="color:var(--tvmuted);">'+esc(it.nota||"—")+'</span>'+
+          '<span class="num">'+(it.cuarto||0)+'</span><span class="num">'+(it.galon||0)+'</span>'+
+          '<span class="num">'+(it.balde||0)+'</span><span class="num">'+(it.cunete||0)+'</span>'+
+        '</div>';
+      }).join("");
+    }
+  }
+
+  function renderAll(){ renderProd(); renderPack(); renderTV(); }
+
+  window.__delProd = function(id){
+    prodItems = prodItems.filter(function(i){ return i.id !== id; });
+    save("cronograma_prod_v1", prodItems);
+    renderAll();
+  };
+  window.__delPack = function(id){
+    packItems = packItems.filter(function(i){ return i.id !== id; });
+    save("cronograma_pack_v1", packItems);
+    renderAll();
+  };
+
+  document.getElementById("formProd").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    prodItems.push({
+      id: nextProdId++,
+      producto: document.getElementById("pProducto").value.trim(),
+      fecha: document.getElementById("pFecha").value || TODAY,
+      operario: document.getElementById("pOperario").value.trim(),
+      cantidad: Number(document.getElementById("pCantidad").value || 0),
+      maquina: document.getElementById("pMaquina").value.trim(),
+      estado: document.getElementById("pEstado").value
+    });
+    save("cronograma_prod_v1", prodItems);
+    ev.target.reset();
+    document.getElementById("pFecha").value = TODAY;
+    document.getElementById("pEstado").value = "nuevo";
+    renderAll();
+  });
+
+  document.getElementById("formPack").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    packItems.push({
+      id: nextPackId++,
+      producto: document.getElementById("kProducto").value.trim(),
+      fecha: document.getElementById("kFecha").value || TODAY,
+      operario: document.getElementById("kOperario").value.trim(),
+      cuarto: Number(document.getElementById("kCuarto").value || 0),
+      galon: Number(document.getElementById("kGalon").value || 0),
+      balde: Number(document.getElementById("kBalde").value || 0),
+      cunete: Number(document.getElementById("kCunete").value || 0),
+      nota: document.getElementById("kNota").value.trim()
+    });
+    save("cronograma_pack_v1", packItems);
+    ev.target.reset();
+    document.getElementById("kFecha").value = TODAY;
+    renderAll();
+  });
+
+  window.setView = function(view){
+    var isTV = view === "tv";
+    document.getElementById("oficina").hidden = isTV;
+    document.getElementById("tv").hidden = !isTV;
+    document.getElementById("tabOficina").classList.toggle("active", !isTV);
+    document.getElementById("tabTV").classList.toggle("active", isTV);
+    document.getElementById("navOficina").classList.toggle("active", !isTV);
+    document.getElementById("navTV").classList.toggle("active", isTV);
+    document.getElementById("viewNote").style.display = isTV ? "none" : "block";
+    try{ localStorage.setItem("cronograma_view_v1", view); }catch(e){}
+    if(isTV) renderTV();
+  };
+
+  function tickClock(){
+    var d = new Date();
+    var hh = String(d.getHours()).padStart(2,"0");
+    var mm = String(d.getMinutes()).padStart(2,"0");
+    document.getElementById("tvClock").textContent = hh+":"+mm;
+    var dias = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+    var meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+    document.getElementById("tvDate").textContent = dias[d.getDay()]+" "+d.getDate()+" de "+meses[d.getMonth()];
+  }
+  setInterval(tickClock, 1000*15);
+  tickClock();
+
+  document.getElementById("pFecha").value = TODAY;
+  document.getElementById("kFecha").value = TODAY;
+
+  var startView = "oficina";
+  try{ startView = localStorage.getItem("cronograma_view_v1") || "oficina"; }catch(e){}
+
+  renderAll();
+  setView(startView);
+})();
+</script>
+</body>
+</html>
